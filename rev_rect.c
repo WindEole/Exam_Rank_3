@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   revision.c                                         :+:      :+:    :+:   */
+/*   rev_rect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: iderighe <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/30 14:15:06 by iderighe          #+#    #+#             */
-/*   Updated: 2022/01/05 15:49:49 by iderighe         ###   ########.fr       */
+/*   Updated: 2022/01/06 15:04:17 by iderighe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	ft_draw(t_set *set, char *win)
 		i++;
 	}
 }
-
+/*
 int	ft_rectangle(float x, float y, t_form *form)
 {
 	if (((x < form->x || (form->x + form->la < x)) || (y < form->y))
@@ -80,9 +80,22 @@ int	ft_rectangle(float x, float y, t_form *form)
 		|| ((y - form->y < 1.00000000 || ((form->y + form->lo) - y < 1.00000000))))
 		return (2);
 	return (1);
+}*/
+
+
+
+int	ft_rectangle(float x, float y, t_form *form)
+{
+	if (x < form->x || x > (form->x + form->la) || y < form->y
+		|| y > (form->y + form->lo))
+		return (0);
+	if ((x - form->x) < 1.00000000 || ((form->x + form->la) - x < 1.00000000)
+		|| (y - form->y) < 1.00000000 || ((form->y + form->lo) - y < 1.00000000))
+		return (2);
+	return (1);
 }
 
-void	ft_put_shapes_to_win(t_set *set, char **win, t_form *form)
+void	ft_put_shapes_to_win(t_set *set, char *win, t_form *form)
 {
 	int	i;
 	int	j;
@@ -94,18 +107,16 @@ void	ft_put_shapes_to_win(t_set *set, char **win, t_form *form)
 		j = 0;
 		while (j < set->w)
 		{
-			what = ft_rectangle(j, i, form);
-if (what)
-	printf("what = [%d]\n", what);
+			what = ft_rectangle((float)j, (float)i, form);
 			if ((form->type == 'r' && what == 2) || (form->type == 'R' && what))
-				(*win)[(i * set->w) + j] = form->cara;
+				win[(i * set->w) + j] = form->cara;
 			j++;
 		}
 		i++;
 	}
 }
 
-int	ft_get_shapes(FILE *file, t_set *set, char **win)
+int	ft_get_shapes(FILE *file, t_set *set, char *win)
 {
 	t_form	form;
 	int		ret;
@@ -155,7 +166,7 @@ int	main(int ac, char **av)
 		return (ft_error("Error: Operation file corrupted\n"));
 	if (!(win = ft_windows(file, &set)))
 		return (ft_free_all(file, NULL, "Error: Operation file corrupted\n"));
-	if (!(ft_get_shapes(file, &set, &win)))
+	if (!(ft_get_shapes(file, &set, win)))
 		return (ft_free_all(file, win, "Error: Operation file corrupted\n"));
 	ft_draw(&set, win);
 	ft_free_all(file, win, NULL);
